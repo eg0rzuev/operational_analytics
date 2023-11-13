@@ -143,10 +143,6 @@ def linear_regression(df, song_name):
     # train, test datasets
     train_size = int(len(dataset) * 0.8)
     test_size = len(dataset) - train_size
-    # temp = dataset[:, 1]
-    # temp[temp <= 1] = 1
-    # dataset[:, 1] = temp
-    # dataset[:, 1] = dataset[:, 1].astype('float64')
 
     train, test = (np.log(dataset[0:train_size, 1].astype('float64')),
                    np.log(dataset[train_size:len(dataset), 1].astype('float64')))
@@ -259,23 +255,18 @@ def svr(df, song_name, use_exogenous=False):
     train, test = y[0:train_size].flatten(), y[train_size:len(dataset)]
     train_x = dataset[0:train_size, 2:]
     param_grid = {
-        'kernel': ['linear', 'rbf', 'poly'],  # You can add other kernel options
-        'C': [0.1, 1, 10],  # Regularization parameter
-        'epsilon': [0.01, 0.1, 1],  # Epsilon parameter
+        'kernel': ['linear', 'rbf', 'poly'],
+        'C': [0.1, 1, 10],
+        'epsilon': [0.01, 0.1, 1],
     }
 
-    # Create an SVR model
     svr_model = SVR()
 
-    # Create a GridSearchCV object with cross-validation
     grid_search = GridSearchCV(estimator=svr_model, param_grid=param_grid, scoring='neg_mean_squared_error', cv=5)
-    # Fit the GridSearchCV object to the training data
     grid_search.fit(train_x, train)
-    # Get the best parameters from grid search
     best_params = grid_search.best_params_
     print("Best Parameters:", best_params)
 
-    # Use the best model for predictions
     best_svr = grid_search.best_estimator_
 
     test_x = dataset[train_size:len(dataset), 2:]
